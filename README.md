@@ -17,19 +17,38 @@ flexctl {dev} {daemon_cmd} {flexget_flags} {alias_cmd} {flexget_cmd}
 - flexget_cmd: Run normal Flexget commands, or append additional commands to the ``alias_cmd``.
 
 ### Examples:
-```
+```bash
 # starts the Flexget daemon utilizing alternate Flexget binary and settings
+# equivelant to `/path/to/dev/flexget -c /path/to/dev/config.yml -l /path/to/dev/fg.log daemon start`
 → flexctl dev start
+
 # executes my_task_name with debug logging
+# equivelant to
+# `/path/to/flexget -c /path/to/config.yml -l /path/to/fg.log -L debug execute --tasks my_task_name`
 → flexctl -L debug execute --tasks my_task_name
+
 # expands the command alias 'fss' (by default, this is 'series show') and
 # passes "My Show" as the show name
+# equivelant to `/path/to/flexget -c /path/to/config.yml -l /path/to/fg.log series show "My Show"`
 → flexctl fss "My Show"
+
+# this example presumes a command alias of
+# [fdtv]='-L debug execute --tasks download_my_tv'
+# is present (see Configuration section 2)
+# equivelant to
+# `/path/to/flexget -c /path/to/config.yml -l /path/to/fg.log -L debug execute --tasks download_my_tv`
+→ flexctl fdtv
+
 # displays the versions of both flexctl and Flexget
+# equivelant to `/path/to/flexget -V`
 → flexctl -V
-# displays CLI help for both flexctl and Flexget
+
+# displays help for both flexctl and Flexget CLI
+# equivelant to `/path/to/flexget -h`
 → flexctl -h
-# displays CLI help for the 'series show' Flexget CLI command
+
+# displays help for the 'series show' Flexget CLI command
+# equivelant to `/path/to/flexget -c /path/to/config.yml -l /path/to/fg.log series show -h`
 → flexctl series show -h
 ```
 
