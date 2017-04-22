@@ -3,18 +3,18 @@ Bash script to control multiple instances of [Flexget](https://github.com/Flexge
 
 ## General usage
 ```
-flexctl {dev} {daemon_cmd} {flexget_flags} {alias_cmd} {flexget_cmd}
+flexctl {dev} {daemon_cmd} {--flexget_flags} {alias_cmd} {flexget_cmd}
 ```
 - ``dev``: Utilize alternate Flexget binary and settings, such as config path. Generally used when you have a development version installed along with a production version. See Configuration section 1 below.
-- daemon_cmd: One of start, stop, reload, restart, or status.
-    - start: Start Flexget and daemonize it.
-    - stop: Shutdown the Flexget daemon.
-    - reload: Reload configuration file in a running Flexget daemon.
-    - restart: Shutdown the Flexget daemon, wait two seconds and restart it.
-    - status: Display whether a Flexget daemon is running, and if so, its process ID.
-- flexget_flags: Any flags that can be utilized with the normal Flexget binary can be inserted here, such as ``-h``, ``-V``, or ``--loglevel``.
-- alias_cmd: Run a command alias. See Configuration section 2 below.
-- flexget_cmd: Run normal Flexget commands, or append additional commands to the ``alias_cmd``.
+- ``daemon_cmd``: One of ``start``, ``stop``, ``reload``, ``restart``, or ``status``.
+    - ``start``: Start Flexget and daemonize it.
+    - ``stop``: Shutdown the Flexget daemon.
+    - ``reload``: Reload configuration file in a running Flexget daemon.
+    - ``restart``: Shutdown the Flexget daemon, wait two seconds and restart it.
+    - ``status``: Display whether a Flexget daemon is running, and if so, its process ID.
+- ``flexget_flags``: Any flags that can be utilized with the normal Flexget binary can be inserted here, such as ``-h``, ``-V``, or ``--loglevel``.
+- ``alias_cmd``: Run a command alias. See Configuration section 2 below.
+- ``flexget_cmd``: Run normal Flexget commands, or append additional commands to the ``alias_cmd``.
 
 ### Examples:
 ```bash
@@ -62,28 +62,22 @@ To configure ``flexctl``, open it in a text editor. These instructions can also 
    If `normal_config_path` and `normal_log_path` are left empty, Flexget will determine the config and log paths for itself.
 Customize `dev_config_path` and `dev_log_path` for your environment. If you don't use multiple versions of Flexget, these can be left blank.
 
-```
-   normal_command_path:    Path to (if necessary) and name of Flexget
-                           binary. (Usually just `flexget`)
-   normal_config_path:     Path to Flexget config file. (Defaults to
-                           `~/.flexget` or `~/flexget` on Windows)
-   normal_config_filename: Filename of Flexget config file. (Defaults
-                           to `config.yml`)
-   normal_log_path:        Path to and filename of log file. (Defaults
-                           to `~/.flexget/flexget.log)
-   dev_command_path:       Path to (if necessary) and name of alternate
-                           Flexget binary.
-   dev_config_path:        Path to alternate Flexget config file.
-   dev_config_filename:    Filename of alternate Flexget config file.
-   dev_log_path:           Path to and filename of alternate log file.
-```
+   - ``normal_command_path``:    Path to (if necessary) and name of Flexget binary. (Usually just `flexget`)
+   - ``normal_config_path``:     Path to Flexget config file. (Defaults to `~/.flexget`, or `~/flexget` on Windows)
+   - ``normal_config_filename``: Filename of Flexget config file. (Defaults to `config.yml`)
+   - ``normal_log_path``:        Path to and filename of log file. (Defaults to `~/.flexget/flexget.log`)
+   - ``dev_command_path``:       Path to (if necessary) and name of alternate Flexget binary.
+   - ``dev_config_path``:        Path to alternate Flexget config file.
+   - ``dev_config_filename``:    Filename of alternate Flexget config file.
+   - ``dev_log_path``:           Path to and filename of alternate log file.
 
 #### 2. Command aliases
 
    These are short aliases to commonly used commands sent to Flexget.
 
-   Define them here by entering a command alias, such as `fsl`, and the actual command to send to Flexget, such as `flexget_series_list`. See examples below and note that all aliases must follow the format ``[alias]='command'``
-<additional commands> will be appended to the command listed here. For example, `flexctl fsl all` will run the command `<flexget> series list all`.
+   Define them here by entering a command alias, such as `fsl`, and the actual command to send to Flexget, such as `flexget_series_list`. See examples below and note that all aliases must follow the format ``[alias]='command'``.
+   
+   Anything coming after the command alias will be appended to the command defined here. For example, `flexctl fsl all` will run the command `<flexget> series list all`.
 
    ##### Examples:
 ```
