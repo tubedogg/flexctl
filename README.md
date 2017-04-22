@@ -31,6 +31,7 @@ flexctl {dev} {daemon_cmd} {flexget_flags} {alias_cmd} {flexget_cmd}
 → flexctl -h
 # displays CLI help for the 'series show' Flexget CLI command
 → flexctl series show -h
+```
 
 ## Configuration
 To configure ``flexctl``, open it in a text editor. These instructions can also be found in the script itself.
