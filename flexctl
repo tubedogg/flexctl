@@ -45,7 +45,7 @@ dev_log_path=''
 ###      Usage:     flexctl <dev> <flags> <command_alias> <additional commands>
 ###      (Note if you use flags from Flexget, they MUST precede the command alias.)
 ###      Define them here by entering a command alias, such as `fsl`, and the actual command
-###      to send to Flexget, such as `flexget_series_list`. See examples below and note
+###      to send to Flexget, such as `series list`. See examples below and note
 ###      that all aliases must follow the format [alias]='command'
 ###      <additional commands> will be appended to the command listed here.
 ###      For example, `flexctl fsl all` will run the command `<flexget> series list all`.
