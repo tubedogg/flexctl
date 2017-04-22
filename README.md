@@ -75,7 +75,7 @@ Customize `dev_config_path` and `dev_log_path` for your environment. If you don'
 
    These are short aliases to commonly used commands sent to Flexget.
 
-   Define them here by entering a command alias, such as `fsl`, and the actual command to send to Flexget, such as `flexget_series_list`. See examples below and note that all aliases must follow the format ``[alias]='command'``.
+   Define them here by entering a command alias, such as `fsl`, and the actual command to send to Flexget, such as `series list`. See examples below and note that all aliases must follow the format ``[alias]='command'``.
    
    Anything coming after the command alias will be appended to the command defined here. For example, `flexctl fsl all` will run the command `<flexget> series list all`.
 
