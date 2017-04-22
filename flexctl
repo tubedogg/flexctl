@@ -1,0 +1,275 @@
+#!/usr/local/bin/bash
+
+### START CONFIGURATION
+###   1. Paths
+###      Usage (dev version):       flexctl dev <command>
+###      Usage (normal version):    flexctl <command>
+###      You can configure up to two versions of Flexget installed using the
+###      'normal' and 'dev' executable path and binary name, config path, and
+###      log path. If you use a virtualenv and always activate it before
+###      running the dev version (in other words, the dev version of Flexget
+###      will be the first version found in your path), you can leave
+###      `dev_command_path` as just `flexget`. Otherwise, enter the path to
+###      and name of the development binary.
+###      If `normal_config_path` and `normal_log_path` are left empty, Flexget
+###      will determine the config and log paths for itself.
+###      Customize `dev_config_path` and `dev_log_path` for your environment.
+###      If you don't use multiple versions of Flexget, these can be left
+###      blank.
+###      normal_command_path:    Path to (if necessary) and name of Flexget
+###                              binary. (Usually just `flexget`)
+###      normal_config_path:     Path to Flexget config file. (Defaults to
+###                              `~/.flexget` or `~/flexget` on Windows)
+###      normal_config_filename: Filename of Flexget config file. (Defaults
+###                              to `config.yml`)
+###      normal_log_path:        Path to and filename of log file. (Defaults
+###                              to `~/.flexget/flexget.log)
+###      dev_command_path:       Path to (if necessary) and name of alternate
+###                              Flexget binary.
+###      dev_config_path:        Path to alternate Flexget config file.
+###      dev_config_filename:    Filename of alternate Flexget config file.
+###      dev_log_path:           Path to and filename of alternate log file.
+
+normal_command_path='flexget'
+normal_config_path=''
+normal_config_filename=''
+normal_log_path=''
+
+dev_command_path=''
+dev_config_path=''
+dev_config_filename=''
+dev_log_path=''
+
+###   2. Command aliases
+###      These are short aliases to commonly used commands sent to Flexget.
+###      Usage:     flexctl <dev> <flags> <command_alias> <additional commands>
+###      (Note if you use flags from Flexget, they MUST precede the command alias.)
+###      Define them here by entering a command alias, such as `fsl`, and the actual command
+###      to send to Flexget, such as `flexget_series_list`. See examples below and note
+###      that all aliases must follow the format [alias]='command'
+###      <additional commands> will be appended to the command listed here.
+###      For example, `flexctl fsl all` will run the command `<flexget> series list all`.
+declare -A command_aliases=( # DO NOT MODFIY THIS LINE
+[fsf]='series forget'
+[fsb]='series begin'
+[fss]='series show'
+[fsl]='series list'
+) # DO NOT MODIFY THIS LINE
+
+###   3. Options
+###      Set this option to 1 to print the path to the Flexget binary used for execution.
+print_flexget_path=0
+
+### END CONFIGURATION
+### Do not modify below this line unless you know what you are doing
+
+version='1.0'
+
+args=("$@")
+fg_command=$normal_command_path
+flag_array=()
+non_array=()
+append_help=''
+declare -i pos
+pos=0
+declare -i skip_next
+for arg in "${args[@]}"; do
+    if [ "$skip_next" = 1 ]; then
+        skip_next=0
+        continue
+    fi
+    skip_next=0
+    if [ "${arg:0:1}" = "-" ]; then
+        # flag
+        if [[ $arg = "-L" || $arg = "--loglevel" || $arg = "--profile" || $arg = '-c' || $arg = 'l' || $arg == 'logfile' ]]; then
+            skip_next=1
+            let next=pos+1
+            if [[ $arg = '-c' ]]; then
+                config_path= ' -c '${args[next]}
+                continue
+            elif [[ $arg = '-l' || $arg = '--logfile' ]]; then
+                log_path= ' -l '${args[next]}
+                continue
+            fi
+            arg+=" "${args[next]}
+        elif [[ $arg = '-h' || $arg = '--help' ]]; then
+            append_help=' -h'
+            continue
+        fi
+        flag_array=("${flag_array[@]}" "$arg")
+    elif [ "$arg" = 'dev' ]; then
+        dev=1
+        fg_command=$dev_command_path
+    else
+        non_array=("${non_array[@]}" "$arg")
+    fi
+    let pos=pos+1
+done
+args=("${non_array[@]}")
+
+daemon_command=${args[0]}
+if [[ -n $config_path || -n $log_path ]]; then
+    if [ "$dev" = 1 ]; then
+        if [[ -n $dev_config_path && -n $dev_config_filename && -n $config_path ]]; then
+            config_path=' -c '$dev_config_path$dev_config_filename
+        elif [[ -n $dev_config_filename && -n $config_path ]]; then
+            config_path=' -c '$dev_config_filename
+        elif [[ -n $dev_config_path && -n $config_path ]]; then
+            config_path=' -c '$dev_config_path
+        else
+            config_path=''
+        fi
+        if [[ -n $dev_log_path && -n $log_path ]]; then
+            log_path=' -l '$dev_log_path
+        else
+            log_path=''
+        fi
+    else
+        if [[ -n $normal_config_path && -n $normal_config_filename && -n $config_path ]]; then
+            config_path=' -c '$normal_config_path$normal_config_filename
+        elif [[ -n $normal_config_filename && -n $config_path ]]; then
+            config_path=' -c '$normal_config_filename
+        elif [[ -n $normal_config_path && -n $config_path ]]; then
+            config_path=' -c '$normal_config_path
+        else
+            config_path=''
+        fi
+        if [[ -n $normal_log_path && -n $log_path ]]; then
+            log_path=' -l '$normal_log_path
+        else
+            log_path=''
+        fi
+    fi
+fi
+
+if [ "$print_flexget_path" = 1 ]; then
+    echo "Path to flexget binary: "$fg_command
+fi
+
+exists(){
+  if [ "$2" != in ]; then
+    echo "Incorrect usage."
+    echo "Correct usage: exists {key} in {array}"
+    return
+  fi   
+  eval '[ ${'$3'[$1]+muahaha} ]'  
+}
+
+start() {
+    if [ -f "$config_path/.config-lock" ]; then
+        echo 'Flexget daemon is already running, or the .config-lock file was not removed at last shutdown.'
+    else
+        final_command=$fg_command$config_path$log_path" daemon start -d"
+        eval "$final_command"
+    fi
+}
+
+status() {
+    final_command=$fg_command$config_path$log_path" daemon status"
+    eval "$final_command"
+}
+
+stop() {
+    final_command=$fg_command$config_path$log_path" daemon stop"
+    eval "$final_command"
+}
+
+restart() {
+    stop
+    sleep 2
+    if [ -f "$config_path/.config-lock" ]; then
+        sleep 2
+        if [ -f "$config_path/.config-lock" ]; then
+            echo 'Flexget daemon is still running. Start the service again manually once it has stopped.'
+        fi
+    else
+        start
+    fi
+}
+
+reload() {
+    final_command=$fg_command$config_path$log_path" daemon reload"
+    eval "$final_command"
+}
+
+others() {
+    final_command=$fg_command$config_path$log_path
+
+    if [ ${#flag_array[@]} -ne 0 ]; then
+        final_command+=" ${flag_array[@]}"
+        if [[ " ${flag_array[@]} " =~ "-V" ]]; then
+            echo $0" version "$version
+        fi
+    fi
+
+    rest_of_commands=0
+    if [ ${#args[@]} -ne 0 ]; then
+        key=${args[0]}
+        if exists $key in command_aliases; then
+            final_command+=" "${command_aliases[$key]}
+            rest_of_commands=1
+        fi
+    fi
+    if [[ ${#args[@]} > $rest_of_commands ]]; then
+        pos=0
+        for arg in "${args[@]}"; do
+            if [[ $pos = 0 && $rest_of_commands = 1 ]]; then
+                pos=1
+                continue
+            fi
+            pattern=" |'"
+            if [[ $arg =~ $pattern ]]; then
+                final_command+=' "'$arg'"'
+            else
+                final_command+=" "$arg
+            fi
+        done
+    fi
+
+    final_command+=$append_help
+    echo $final_command
+    eval "$final_command"
+}
+
+show_help() {
+    commands="    Alias commands:"
+    for t_alias in "${!command_aliases[@]}"; do
+        commands+="\n        "$t_alias"\t"${command_aliases[$t_alias]}
+    done
+    cmd_name=`basename "$0"`
+    cat << EOF
+$cmd_name Help
+Syntax: $cmd_name {dev} {daemon_cmd} {flexget_flags} {alias_cmd} {flexget_cmd}
+    Positional arguments:
+        dev     Run command using development version of Flexget,
+                as specified in configuration
+        flexget_flags
+                Any flags used with Flexget, such as -L LOGLEVEL or --test
+EOF
+    echo -e "$commands"
+    cat << EOF
+    Daemon operational commands:
+        start   Start the service
+        stop    Stop the service
+        restart Stop and restart the service
+        status  See service status
+        reload  Reload configuration file
+    Flexget command:
+        ...     Any normal Flexget CLI command(s) including flags
+----------------------
+Flexget Help
+EOF
+    final_command=$fg_command$config_path$log_path" -h"
+    eval "$final_command"
+}
+
+case $daemon_command in
+    start    ) start      ;;
+    stop     ) stop       ;;
+    status   ) status     ;;
+    reload   ) reload     ;;
+    restart  ) restart    ;;
+    '-h'     ) show_help  ;;
+    '--help' ) show_help  ;;
+    *        ) others     ;;
+esac
