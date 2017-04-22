@@ -1,5 +1,5 @@
 # flexctl
-Bash script to control multiple instances of Flexget
+Bash script to control multiple instances of [Flexget](https://github.com/Flexget/Flexget)
 
 ## General usage
 ```
@@ -16,7 +16,7 @@ flexctl {dev} {daemon_cmd} {flexget_flags} {alias_cmd} {flexget_cmd}
 - alias_cmd: Run a command alias. See Configuration section 2 below.
 - flexget_cmd: Run normal Flexget commands, or append additional commands to the ``alias_cmd``.
 
-###Examples:
+### Examples:
 ```
 # starts the Flexget daemon utilizing alternate Flexget binary and settings
 → flexctl dev start
@@ -37,11 +37,12 @@ flexctl {dev} {daemon_cmd} {flexget_flags} {alias_cmd} {flexget_cmd}
 To configure ``flexctl``, open it in a text editor. These instructions can also be found in the script itself.
 
 1. Paths
-Usage (dev version):       flexctl dev <command>
-Usage (normal version):    flexctl <command>
-You can configure up to two versions of Flexget installed using the 'normal' and 'dev' executable path and binary name, config path, and log path. If you use a virtualenv and always activate it before running the dev version (in other words, the dev version of Flexget will be the first version found in your path), you can leave `dev_command_path` as just `flexget`. Otherwise, enter the path to and name of the development binary.
-If `normal_config_path` and `normal_log_path` are left empty, Flexget will determine the config and log paths for itself.
+
+  You can configure up to two versions of Flexget installed using the 'normal' and 'dev' executable path and binary name, config path, and log path. If you use a virtualenv and always activate it before running the dev version (in other words, the dev version of Flexget will be the first version found in your path), you can leave `dev_command_path` as just `flexget`. Otherwise, enter the path to and name of the development binary.
+
+  If `normal_config_path` and `normal_log_path` are left empty, Flexget will determine the config and log paths for itself.
 Customize `dev_config_path` and `dev_log_path` for your environment. If you don't use multiple versions of Flexget, these can be left blank.
+
 ```
    normal_command_path:    Path to (if necessary) and name of Flexget
                            binary. (Usually just `flexget`)
@@ -59,12 +60,13 @@ Customize `dev_config_path` and `dev_log_path` for your environment. If you don'
 ```
 
 2. Command aliases
-These are short aliases to commonly used commands sent to Flexget.
-Usage:                     flexctl <dev> <flags> <command_alias> <additional commands>
-(Note if you use flags from Flexget, they MUST precede the command alias.)
-Define them here by entering a command alias, such as `fsl`, and the actual command to send to Flexget, such as `flexget_series_list`. See examples below and note that all aliases must follow the format ``[alias]='command'``
+
+  These are short aliases to commonly used commands sent to Flexget.
+
+  Define them here by entering a command alias, such as `fsl`, and the actual command to send to Flexget, such as `flexget_series_list`. See examples below and note that all aliases must follow the format ``[alias]='command'``
 <additional commands> will be appended to the command listed here. For example, `flexctl fsl all` will run the command `<flexget> series list all`.
-Examples:
+
+ Examples:
 ```
 [fsf]='series forget'
 [fsb]='series begin'
@@ -73,4 +75,5 @@ Examples:
 ```
 
 3. Options
-Set ``print_flexget_path`` to 1 (e.g. ``print_flexget_path=1``) to always print the path to and name of the Flexget binary as the first output.
+
+  Set ``print_flexget_path`` to 1 (e.g. ``print_flexget_path=1``) to always print the path to and name of the Flexget binary as the first output.
