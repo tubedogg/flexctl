@@ -13,7 +13,7 @@ flexctl {dev} {daemon_cmd} {--flexget_flags} {alias_cmd} {flexget_cmd}
     - ``restart``: Shutdown the Flexget daemon, wait two seconds and restart it.
     - ``status``: Display whether a Flexget daemon is running, and if so, its process ID.
 - ``flexget_flags``: Any flags that can be utilized with the normal Flexget binary can be inserted here, such as ``-h``, ``-V``, or ``--loglevel``.
-- ``alias_cmd``: Run a command alias. See Configuration section 2 below.
+- ``alias_cmd``: Run a command alias. See [Configuration section 2](https://github.com/tubedogg/flexctl#2-command-aliases) below.
 - ``flexget_cmd``: Run normal Flexget commands, or append additional commands to the ``alias_cmd``.
 
 ### Examples:
