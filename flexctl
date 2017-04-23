@@ -64,9 +64,11 @@ print_flexget_path=0
 ### Do not modify below this line unless you know what you are doing
 
 version='1.0'
+cmd_name=`basename "$0"`
 
 args=("$@")
 fg_command=$normal_command_path
+flag_cmds=(-h --help -V --version --test -c --loglife -l -loglevel -L --bugreport --profile --cron --debug-db-sessions --debug-warnings)
 flag_array=()
 non_array=()
 append_help=''
@@ -79,9 +81,11 @@ for arg in "${args[@]}"; do
         continue
     fi
     skip_next=0
-    if [ "${arg:0:1}" = "-" ]; then
+    if [[ "${flag_cmds[@]}" =~ $arg ]]; then
+    #if [ "${arg:0:1}" = "-" ]; then
         # flag
         if [[ $arg = "-L" || $arg = "--loglevel" || $arg = "--profile" || $arg = '-c' || $arg = 'l' || $arg == 'logfile' ]]; then
+            # these are expected to have something after them that needs to go along with them
             skip_next=1
             let next=pos+1
             if [[ $arg = '-c' ]]; then
@@ -197,8 +201,10 @@ others() {
 
     if [ ${#flag_array[@]} -ne 0 ]; then
         final_command+=" ${flag_array[@]}"
-        if [[ " ${flag_array[@]} " =~ "-V" ]]; then
-            echo $0" version "$version
+        if [[ " ${flag_array[@]} " =~ "-V" || " ${flag_array[@]} " =~ "--version" ]]; then
+            echo $cmd_name" v"$version
+            echo "Flexget binary path: "$fg_command
+            echo "Flexget:"
         fi
     fi
 
@@ -227,7 +233,7 @@ others() {
     fi
 
     final_command+=$append_help
-    echo $final_command
+    #echo $final_command
     eval "$final_command"
 }
 
@@ -236,7 +242,6 @@ show_help() {
     for t_alias in "${!command_aliases[@]}"; do
         commands+="\n        "$t_alias"\t"${command_aliases[$t_alias]}
     done
-    cmd_name=`basename "$0"`
     cat << EOF
 $cmd_name Help
 Syntax: $cmd_name {dev} {daemon_cmd} {flexget_flags} {alias_cmd} {flexget_cmd}
