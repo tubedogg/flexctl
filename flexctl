@@ -6,16 +6,11 @@
 ###      Usage (normal version):    flexctl <command>
 ###      You can configure up to two versions of Flexget installed using the
 ###      'normal' and 'dev' executable path and binary name, config path, and
-###      log path. If you use a virtualenv and always activate it before
-###      running the dev version (in other words, the dev version of Flexget
-###      will be the first version found in your path), you can leave
-###      `dev_command_path` as just `flexget`. Otherwise, enter the path to
-###      and name of the development binary.
+###      log path.
 ###      If `normal_config_path` and `normal_log_path` are left empty, Flexget
 ###      will determine the config and log paths for itself.
-###      Customize `dev_config_path` and `dev_log_path` for your environment.
-###      If you don't use multiple versions of Flexget, these can be left
-###      blank.
+###      Customize the `dev` paths for your environment. If you don't use
+###      multiple versions of Flexget, these can be left blank.
 ###      normal_command_path:    Path to (if necessary) and name of Flexget
 ###                              binary. (Usually just `flexget`)
 ###      normal_config_path:     Path to Flexget config file. (Defaults to
